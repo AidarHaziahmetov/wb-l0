@@ -1,0 +1,25 @@
+# VCS
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Build artifacts
+bin/
+dist/
+out/
+
+# Modules cache (не нужен внутри контекста сборки)
+**/node_modules
+
+# OS junk
+*.swp
+*.swo
+*.DS_Store
+
+# Local env files
+.env
+.env.*
+

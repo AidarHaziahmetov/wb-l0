@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление заказами</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1.1em;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input[list], .form-group input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1.1em;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[list]:focus, .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .response-time {
+            background: #e3f2fd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 1.1em;
+            color: #1976d2;
+        }
+
+        .response-body {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #333;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #f44336;
+            margin-top: 20px;
+        }
+
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Управление заказами</h1>
+            <p>Выберите заказ и получите детальную информацию</p>
+            <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+                ⚡ Сервер отвечает быстро, но фронтенд показывает полное время запроса
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="form-group">
+                <label for="orderSelect">Выберите заказ:</label>
+                <input type="text" id="orderSelect" list="orderUids" placeholder="Введите или выберите UID заказа">
+                <datalist id="orderUids"></datalist>
+            </div>
+            
+            <button id="getOrderBtn" class="btn" disabled>
+                Получить детали заказа
+            </button>
+            
+            <div id="result" class="result" style="display: none;">
+                <h3>Результат запроса:</h3>
+                <div id="responseTime" class="response-time"></div>
+                <div id="responseBody" class="response-body"></div>
+            </div>
+            
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                Загрузка...
+            </div>
+            
+            <div id="error" class="error" style="display: none;"></div>
+            <div id="success" class="success" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        class OrderManager {
+            constructor() {
+                this.orderSelect = document.getElementById('orderSelect');
+                this.orderDatalist = document.getElementById('orderUids');
+                this.getOrderBtn = document.getElementById('getOrderBtn');
+                this.result = document.getElementById('result');
+                this.responseTime = document.getElementById('responseTime');
+                this.responseBody = document.getElementById('responseBody');
+                this.loading = document.getElementById('loading');
+                this.error = document.getElementById('error');
+                this.success = document.getElementById('success');
+                
+                this.init();
+            }
+            
+            async init() {
+                await this.loadOrders();
+                this.bindEvents();
+            }
+            
+            async loadOrders() {
+                try {
+                    this.showLoading('Загрузка списка заказов...');
+                    
+                    const startTime = performance.now();
+                    const response = await fetch('/orders');
+                    const endTime = performance.now();
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const orders = await response.json();
+                    
+                    this.populateOrderSelect(orders);
+                    this.showSuccess(`Список заказов загружен за ${this.formatTime(endTime - startTime)}`);
+                    
+                } catch (error) {
+                    console.error('Ошибка загрузки заказов:', error);
+                    this.showError(`Ошибка загрузки списка заказов: ${error.message}`);
+                    // Keep the input field, but clear datalist
+                    this.orderDatalist.innerHTML = '';
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            populateOrderSelect(orders) {
+                this.orderDatalist.innerHTML = ''; // Clear previous options
+                
+                if (Array.isArray(orders) && orders.length > 0) {
+                    orders.forEach(order => {
+                        const option = document.createElement('option');
+                        option.value = order.order_uid || order;
+                        this.orderDatalist.appendChild(option);
+                    });
+                } else {
+                    // No orders, but keep the input field usable
+                    this.orderDatalist.innerHTML = '';
+                }
+            }
+            
+            async getOrderDetails(orderUid) {
+                try {
+                    this.showLoading('Получение деталей заказа...');
+                    this.hideResult();
+                    
+                    // Более точное измерение времени
+                    const requestStart = performance.now();
+                    const response = await fetch(`/orders/${orderUid}`);
+                    const responseReceived = performance.now();
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const orderData = await response.json();
+                    const dataParsed = performance.now();
+                    
+                    // Разбиваем время на компоненты
+                    const networkTime = responseReceived - requestStart;
+                    const parseTime = dataParsed - responseReceived;
+                    const totalTime = dataParsed - requestStart;
+                    
+                    this.displayResult(orderData, totalTime, networkTime, parseTime);
+                    this.showSuccess(`Детали заказа получены за ${this.formatTime(totalTime)}`);
+                    
+                } catch (error) {
+                    console.error('Ошибка получения заказа:', error);
+                    this.showError(`Ошибка получения заказа: ${error.message}`);
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            displayResult(data, totalTime, networkTime, parseTime) {
+                this.responseTime.innerHTML = `
+                    <strong>Общее время:</strong> ${this.formatTime(totalTime)}<br>
+                    <strong>Сетевая задержка:</strong> ${this.formatTime(networkTime)}<br>
+                    <strong>Парсинг данных:</strong> ${this.formatTime(parseTime)}
+                `;
+                this.responseBody.textContent = JSON.stringify(data, null, 2);
+                this.result.style.display = 'block';
+            }
+            
+            formatTime(milliseconds) {
+                const microseconds = Math.round(milliseconds * 1000);
+                return `${microseconds} µs`;
+            }
+            
+            bindEvents() {
+                this.orderSelect.addEventListener('input', () => {
+                    this.getOrderBtn.disabled = !this.orderSelect.value.trim(); // Check for non-empty input
+                });
+                
+                this.getOrderBtn.addEventListener('click', () => {
+                    const selectedOrder = this.orderSelect.value.trim();
+                    if (selectedOrder) {
+                        this.getOrderDetails(selectedOrder);
+                    }
+                });
+            }
+            
+            showLoading(message) {
+                this.loading.textContent = message;
+                this.loading.style.display = 'block';
+                this.getOrderBtn.disabled = true;
+            }
+            
+            hideLoading() {
+                this.loading.style.display = 'none';
+                this.getOrderBtn.disabled = !this.orderSelect.value.trim();
+            }
+            
+            showResult() {
+                this.result.style.display = 'block';
+            }
+            
+            hideResult() {
+                this.result.style.display = 'none';
+            }
+            
+            showError(message) {
+                this.error.textContent = message;
+                this.error.style.display = 'block';
+                setTimeout(() => {
+                    this.error.style.display = 'none';
+                }, 5000);
+            }
+            
+            showSuccess(message) {
+                this.success.textContent = message;
+                this.success.style.display = 'block';
+                setTimeout(() => {
+                    this.success.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            new OrderManager();
+        });
+    </script>
+</body>
+</html>
