@@ -1,22 +1,15 @@
 SHELL := /bin/bash
 
-.PHONY: run-api run-consumer run-producer tidy deps lint test test-unit test-repo migrate-install migrate-create migrate-up migrate-down build up down
+.PHONY: run-app run-consumer run-producer tidy deps lint test test-unit test-repo migrate-install migrate-create migrate-up migrate-down build up down
 
 export GO111MODULE=on
 
-run-api:
-	go run ./cmd/api
+run-app:
+	go run ./cmd/app
 
-run-consumer:
-	go run ./cmd/consumer
-
-run-producer:
-	go run ./cmd/producer
 
 build:
-	go build -o bin/api ./cmd/api
-	go build -o bin/consumer ./cmd/consumer
-	go build -o bin/producer ./cmd/producer
+	go build -o bin/app ./cmd/app
 
 tidy:
 	go mod tidy
@@ -32,17 +25,6 @@ deps:
 
 test:
 	go test -v ./...
-
-test-unit:
-	go test -v ./internal/repository/... -run TestOrderRepositoryUnit
-
-test-repo:
-	go test -v ./internal/repository/...
-
-test-repo-coverage:
-	go test -coverprofile=coverage.out ./internal/repository/...
-	go tool cover -html=coverage.out -o coverage.html
-	@echo "Coverage report generated: coverage.html"
 
 migrate-install:
 	@echo "Installing golang-migrate CLI..."
