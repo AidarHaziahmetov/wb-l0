@@ -83,11 +83,10 @@ services:
       - KAFKA_TOPIC=orders
       - PG_DSN=postgres://postgres:postgres@postgres:5432/l0?sslmode=disable
       - LOG_LEVEL=info
-      - CACHE_MAX_ITEMS=10000
+      - CACHE_MAX_ITEMS=3
     ports:
       - "8080:8080"
     restart: unless-stopped
-
 
 volumes:
   kafka_data: {}

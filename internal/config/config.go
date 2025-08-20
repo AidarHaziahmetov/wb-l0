@@ -13,7 +13,7 @@ type Config struct {
 	KafkaGroupID  string   `envconfig:"KAFKA_GROUP_ID" default:"wb-l0-go-consumer"`
 	PostgresDSN   string   `envconfig:"PG_DSN" default:"postgres://postgres:postgres@localhost:5432/l0?sslmode=disable"`
 	LogLevel      string   `envconfig:"LOG_LEVEL" default:"info"`
-	CacheMaxItems int      `envconfig:"CACHE_MAX_ITEMS" default:"100"`
+	CacheMaxItems int      `envconfig:"CACHE_MAX_ITEMS" default:"5"`
 }
 
 // Загрузка конфигурации из переменных окружения и файла .env.
